@@ -2,6 +2,7 @@ import sys
 import random
 import libnum
 import Crypto
+import base64
 from math import log
 from Crypto.Util.number import *
 
@@ -78,26 +79,61 @@ if __name__ == '__main__':
 
     while p == q:
         q = getPrime(prime_bits)
-    
-    # print("p is: \n", p)
-    # print("\n")
-    # print("q is: \n", q)
 
-    n = p * q
+    n = p * q   # RSA modulus
 
     phi = (p - 1) * (q - 1) # Carmichael's totient
 
     d = libnum.invmod(e, phi)   # modular multiplicative inverse
 
-    m = bytes_to_long(message.encode('utf-8'))
-
-    c = pow(m, e, n)
-    res = pow(c, d, n)
-
     # print(n.bit_length())
     # print ("Message=%s\np=%s\nq=%s\n\nd=%d\ne=%d\nN=%s\n\nPrivate key (d,n)\nPublic key (e,n)\n\ncipher=%s\ndecipher=%s" % (message,p,q,d,e,n,c,(long_to_bytes(res))))
 
-    # file_in =  open(r"input.txt", "r")
-    # message = file_in.read_lines()
+    file_obj = open(r"input.txt", "r")
+    message = file_obj.readlines()
+    file_obj.close()
 
-    # print(message)
+    message = ''.join(message)
+    
+    c = ''
+    for ch in message:
+        m = ord(ch)
+        # print('ch: ', ch)
+        # print('m: ', m)
+        c += str(pow(m, e, n)) + " "
+
+    print("Message read: ")
+    print(message)
+
+    # m = int.from_bytes(message.encode(), byteorder='big', signed=False)
+    # c = pow(m, e, n)    # Generating cipher text
+
+    c = base64.b64encode(c.encode())
+    
+    file_obj = open(r"cipher_text.txt", "w")
+    file_obj.write(str(c))
+    file_obj.close()
+    
+    # print("Ciphered text: ")
+    # print(long_to_bytes(c))
+
+    c = base64.b64decode(c).decode()
+
+    parts = c.split()
+    # print(c)
+    # print('\n')
+    # print(parts)
+    res = ''
+    for part in parts:
+        if part:
+            ch = int(part)
+            res += chr(pow(ch, d, n))
+
+    # res = pow(c, d, n)  # Deciphering text
+    
+    file_obj = open(r"output.txt", "w")
+    file_obj.writelines(res)
+    file_obj.close()
+
+    print("Deciphered text: ")
+    print(res)

@@ -22,8 +22,8 @@ RSA Signature Generator and Verifier made with python
 - [ ] Assinar mensagem (fazer *digest* da mensagem com SHA-3).
   - `s = m^d mod n`;
 
-- [ ] Desformatar mensagem m;
+- [x] Desformatar mensagem m;
 
-- [ ] Ler mensagem de arquivo;
-- [ ] Salvar texto cifrado em arquivo;
-- [ ] Salvar texto decifrado em arquivo;
+- [x] Ler mensagem de arquivo;
+- [x] Salvar texto cifrado em arquivo;
+- [x] Salvar texto decifrado em arquivo;

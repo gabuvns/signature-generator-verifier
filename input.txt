@@ -1,2 +1,2 @@
 Um usuário do RSA cria e publica uma chave (chave pública) baseada em dois números primos grandes, junto com um valor auxiliar. Os números primos devem ser mantidos secretos. Qualquer um pode usar a chave pública para encriptar a mensagem, mas com métodos atualmente publicados, e se a chave pública for muito grande, apenas alguém com o conhecimento dos números primos pode decodificar a mensagem de forma viável. Quebrar a encriptação RSA é conhecido como problema RSA. Se ele for tão difícil quanto o problema de fatoramento, ele permanece como uma questão em aberto.
-Fonte: https://pt.wikipedia.org/wiki/RSA_(sistema_criptogr%C3%A1fico)
+Fonte: https://pt.wikipedia.org/wiki/RSA_(sistema_criptográfico)

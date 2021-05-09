@@ -1,10 +1,13 @@
 import sys
 import random
-import libnum
+import libnum   # mod
 import Crypto
-import base64
-from math import log
 from Crypto.Util.number import *
+import base64   # encode/decode
+from math import log
+import hashlib  # hash
+if sys.version_info < (3, 6):
+    import sha3
 
 def bytes_needed(n):
     if n == 0:
@@ -94,46 +97,73 @@ if __name__ == '__main__':
     file_obj.close()
 
     message = ''.join(message)
-    
-    c = ''
-    for ch in message:
-        m = ord(ch)
-        # print('ch: ', ch)
-        # print('m: ', m)
-        c += str(pow(m, e, n)) + " "
+    message = "Ola teste 123"
+    # c = ''
+    # for ch in message:
+    #     m = ord(ch)
+    #     # print('ch: ', ch)
+    #     # print('m: ', m)
+    #     c += str(pow(m, e, n)) + " "
 
     print("Message read: ")
-    print(message)
+    print("%s\n" % message)
+
+    encoded_bytes = base64.b64encode(message.encode('UTF-8'))
+    int_b = int.from_bytes(encoded_bytes, 'big')
+    
+    # info = [int_b[i:i+2] for i in range(0, len(int_b), 2)]
+
+    print("b64: %s\n" % encoded_bytes)
+    print("Int representation: %s\n" % int_b)
+
+    # hash_sha3_512 = hashlib.new("sha3_512", message.encode())
+    # print("HASH:\n{}".format(hash_sha3_512.hexdigest()))
+
+    c = pow(int_b, e, n)
+    
+    print("Cipher-int: %s\n" % c)
 
     # m = int.from_bytes(message.encode(), byteorder='big', signed=False)
     # c = pow(m, e, n)    # Generating cipher text
 
-    c = base64.b64encode(c.encode())
+    # c = base64.b64encode(c.encode())
     
-    file_obj = open(r"cipher_text.txt", "w")
-    file_obj.write(str(c))
-    file_obj.close()
+    # file_obj = open(r"cipher_text.txt", "w")
+    # file_obj.write(str(c))
+    # file_obj.close()
     
     # print("Ciphered text: ")
     # print(long_to_bytes(c))
 
-    c = base64.b64decode(c).decode()
+    # c = base64.b64decode(c).decode()
 
-    parts = c.split()
+    # parts = c.split()
     # print(c)
     # print('\n')
     # print(parts)
-    res = ''
-    for part in parts:
-        if part:
-            ch = int(part)
-            res += chr(pow(ch, d, n))
+    # res = ''
+    # for part in parts:
+    #     if part:
+    #         ch = int(part)
+    #         res += chr(pow(ch, d, n))
 
     # res = pow(c, d, n)  # Deciphering text
+
+    dc = pow(c, d, n)
     
+    print("Deciphered-int: %s\n" % dc)
+    dc = (dc).to_bytes((dc.bit_length() + 7) // 8, byteorder='big')
+    print("Deciphered-b64: %s\n" % dc)
+    
+    encoded_str = base64.b64decode(dc)
+    res = str(encoded_str, 'UTF-8')
+
     file_obj = open(r"output.txt", "w")
     file_obj.writelines(res)
     file_obj.close()
 
-    print("Deciphered text: ")
-    print(res)
+    print("Deciphered text: %s\n" % res)
+
+    # data = b'\x00\x00\x00\x00\x00'
+    # info = [data[i:i+2] for i in range(0, len(data), 2)]
+    # print(info)

@@ -97,7 +97,7 @@ if __name__ == '__main__':
     file_obj.close()
 
     message = ''.join(message)
-    message = "Ola teste 123"
+    # message = "Ola teste 123"
     # c = ''
     # for ch in message:
     #     m = ord(ch)
@@ -107,21 +107,52 @@ if __name__ == '__main__':
 
     print("Message read: ")
     print("%s\n" % message)
-
-    encoded_bytes = base64.b64encode(message.encode('UTF-8'))
-    int_b = int.from_bytes(encoded_bytes, 'big')
+        
     
+    separatedMessage = []
+    
+    messageCounter = 0;
+    finalMessage=""
+    auxMessage=""
+    for c in message:
+        if messageCounter == 64:
+            separatedMessage.append(auxMessage)
+            auxMessage=""
+            messageCounter = 0
+        auxMessage+=c
+        messageCounter+=1
+        
+    for i in separatedMessage:
+        print("BEGIN LOOP\n")
+        print("MENSAGEM ANTES")
+        print(i)
+        encoded_bytes = base64.b64encode(i.encode('UTF-8'))
+        int_b = int.from_bytes(encoded_bytes, 'big')
+    
+        print("b64: %s\n" % encoded_bytes)
+        print("Int representation: %s\n" % int_b)
+    
+        c = pow(int_b, e, n)
+        print("Cipher-int: %s\n" % c)
+        
+        dc = pow(c, d, n)
+        
+        print("Deciphered-int: %s\n" % dc)
+        dc = (dc).to_bytes((dc.bit_length() + 7) // 8, byteorder='big')
+        print("Deciphered-b64: %s\n" % dc)
+
+        encoded_str = base64.b64decode(dc + b'===')
+        res = str(encoded_str, 'UTF-8')
+        
+        print("Deciphered text: %s\n" % res)
+        finalMessage+=res
+        
     # info = [int_b[i:i+2] for i in range(0, len(int_b), 2)]
 
-    print("b64: %s\n" % encoded_bytes)
-    print("Int representation: %s\n" % int_b)
 
     # hash_sha3_512 = hashlib.new("sha3_512", message.encode())
     # print("HASH:\n{}".format(hash_sha3_512.hexdigest()))
 
-    c = pow(int_b, e, n)
-    
-    print("Cipher-int: %s\n" % c)
 
     # m = int.from_bytes(message.encode(), byteorder='big', signed=False)
     # c = pow(m, e, n)    # Generating cipher text
@@ -149,20 +180,14 @@ if __name__ == '__main__':
 
     # res = pow(c, d, n)  # Deciphering text
 
-    dc = pow(c, d, n)
     
-    print("Deciphered-int: %s\n" % dc)
-    dc = (dc).to_bytes((dc.bit_length() + 7) // 8, byteorder='big')
-    print("Deciphered-b64: %s\n" % dc)
-    
-    encoded_str = base64.b64decode(dc)
-    res = str(encoded_str, 'UTF-8')
 
-    file_obj = open(r"output.txt", "w")
-    file_obj.writelines(res)
-    file_obj.close()
+    # file_obj = open(r"output.txt", "w")
+    # file_obj.writelines(res)
+    # file_obj.close()
+    # print("Deciphered text: %s\n" % res)
 
-    print("Deciphered text: %s\n" % res)
+    print(finalMessage)
 
     # data = b'\x00\x00\x00\x00\x00'
     # info = [data[i:i+2] for i in range(0, len(data), 2)]

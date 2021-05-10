@@ -72,24 +72,9 @@ def getPrime(n):
                 else:
                     break  # not prime
 
-def generatePublicAndPrivateKey():
-    prime_bits = 512
-    e = 65537
-    p = getPrime(prime_bits)
-    q = getPrime(prime_bits)
-
-    while p == q:
-        q = getPrime(prime_bits)
-
-    n = p * q   # RSA modulus
-
-    phi = (p - 1) * (q - 1) # Carmichael's totient
-
-    d = libnum.invmod(e, phi)   # modular multiplicative inverse
-    
 
 if __name__ == '__main__':
-    # For this section let's generate private and public keys :)
+    message = "Dupla Eduardo e Carlinhos"
     prime_bits = 512
     e = 65537
     p = getPrime(prime_bits)
@@ -103,29 +88,75 @@ if __name__ == '__main__':
     phi = (p - 1) * (q - 1) # Carmichael's totient
 
     d = libnum.invmod(e, phi)   # modular multiplicative inverse
+
+    # print(n.bit_length())
+    # print ("Message=%s\np=%s\nq=%s\n\nd=%d\ne=%d\nN=%s\n\nPrivate key (d,n)\nPublic key (e,n)\n\ncipher=%s\ndecipher=%s" % (message,p,q,d,e,n,c,(long_to_bytes(res))))
 
     file_obj = open(r"input.txt", "r")
     message = file_obj.readlines()
     file_obj.close()
 
     message = ''.join(message)
+    message = "Olaaaaa"
+    # c = ''
+    # for ch in message:
+    #     m = ord(ch)
+    #     # print('ch: ', ch)
+    #     # print('m: ', m)
+    #     c += str(pow(m, e, n)) + " "
+
+    # print("Message read: ")
+    # print("%s\n" % message)
     
-    hashed_message = hashlib.sha3_256(message.encode())
-    print( "Hashed text: " +  hashed_message.hexdigest())
-    print("Message read: ")
-    print("%s\n" % message)
+    encoded_bytes = base64.b64encode(message.encode('UTF-8'))
     
-    encoded_bytes = base64.b64encode(hashed_message.hexdigest().encode('UTF-8'))
-    # 
     int_b = int.from_bytes(encoded_bytes, 'big')
 
     print("b64: %s\n" % encoded_bytes)
     print("Int representation: %s\n" % int_b)
-    #Gera chave publica    
-    c = pow(int_b, e, n)
-    print("Cipher-int: %s\n" % c)
+    print("Bytes needed: %d" % len(encoded_bytes))
+
+    # hash_sha3_512 = hashlib.new("sha3_512", message.encode())
+    # print("HASH:\n{}".format(hash_sha3_512.hexdigest()))
+    # for i in range(str(int_b)):
+
+    chunks = [str(encoded_bytes)[i:i+128] for i in range(0, len(encoded_bytes), 128)]
+    print("chunks: {}".format(chunks))
     
-    dc = pow(c, d, n)
+    c = []
+    for i in range(len(chunks)):
+        aux = int.from_bytes(encoded_bytes, byteorder='big', signed=False)
+        c.append(pow(aux, e, n))
+    # c = pow(int_b, e, n)
+    
+
+    print("Cipher-int: %s\n" % c)
+
+    # m = int.from_bytes(message.encode(), byteorder='big', signed=False)
+    # c = pow(m, e, n)    # Generating cipher text
+
+    # c = base64.b64encode(c.encode())
+    
+    # file_obj = open(r"cipher_text.txt", "w")
+    # file_obj.write(str(c))
+    # file_obj.close()
+    
+    # print("Ciphered text: ")
+    # print(long_to_bytes(c))
+
+    # c = base64.b64decode(c).decode()
+
+    # parts = c.split()
+    # print(c)
+    # print('\n')
+    # print(parts)
+    # res = ''
+    # for part in parts:
+    #     if part:
+    #         ch = int(part)
+    #         res += chr(pow(ch, d, n))
+
+    # res = pow(c, d, n)  # Deciphering text
     
     dc = [0] * len(c)
     # print(len(dc))
@@ -137,54 +168,19 @@ if __name__ == '__main__':
         dc[i] = dc[i].decode('utf-8')
 
     print("Deciphered-int: %s\n" % dc)
-    dc = (dc).to_bytes((dc.bit_length() + 7) // 8, byteorder='big')
-    print("Deciphered-b64: %s\n" % dc)
+    # dc = ''.join(dc)
+    # dc = (dc).to_bytes((dc.bit_length() + 7) // 8, byteorder='big')
+    # print("Deciphered-b64: %s\n" % dc)
+    
+    # encoded_str = base64.b64decode(dc)
+    # res = str(encoded_str, 'UTF-8')
 
-    encoded_str = base64.b64decode(dc + b'===')
-    res = str(encoded_str, 'UTF-8')
-    
-    print("Deciphered text hashed: %s\n" % res)
-    
-    # finalMessage+=res
-        
-    
-    # separatedMessage = []
-    
-    # messageCounter = 0;
-    # finalMessage=""
-    # auxMessage=""
-    
-    # for c in message:
-            
-    #     auxMessage+=c
-    #     messageCounter+=1
-    #     if messageCounter % 64 == 0 or messageCounter == len(message):
-    #         separatedMessage.append(auxMessage)
-    #         auxMessage=""
-    # encryptMessage(privateKey, message);
-    # for i in separatedMessage:
-    #     print("BEGIN LOOP\n")
-    #     print("MENSAGEM ANTES")
-    #     print(i)
-    #     encoded_bytes = base64.b64encode(i.encode('UTF-8'))
-    #     int_b = int.from_bytes(encoded_bytes, 'big')
-    
-    #     print("b64: %s\n" % encoded_bytes)
-    #     print("Int representation: %s\n" % int_b)
-    
-    #     c = pow(int_b, e, n)
-    #     print("Cipher-int: %s\n" % c)
-        
-    #     dc = pow(c, d, n)
-        
-    #     print("Deciphered-int: %s\n" % dc)
-    #     dc = (dc).to_bytes((dc.bit_length() + 7) // 8, byteorder='big')
-    #     print("Deciphered-b64: %s\n" % dc)
+    file_obj = open(r"output.txt", "w")
+    file_obj.writelines(res)
+    file_obj.close()
 
-    #     encoded_str = base64.b64decode(dc + b'===')
-    #     res = str(encoded_str, 'UTF-8')
-        
-    #     print("Deciphered text: %s\n" % res)
-    #     finalMessage+=res
-        
-    # print(finalMessage)   
+    print("Deciphered text: %s\n" % res)
+
+    # data = b'\x00\x00\x00\x00\x00'
+    # info = [data[i:i+2] for i in range(0, len(data), 2)]
+    # print(info)

@@ -19,7 +19,7 @@ RSA Signature Generator and Verifier made with python
 
 - [ ] Formatar mensagem m (*padding* OAEP);
 
-- [ ] Assinar mensagem (fazer *digest* da mensagem com SHA-3).
+- [x] Assinar mensagem (fazer *digest* da mensagem com SHA-3).
   - `s = m^d mod n`;
 
 - [x] Desformatar mensagem m;

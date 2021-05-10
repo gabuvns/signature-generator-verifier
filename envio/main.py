@@ -30,7 +30,7 @@ def getRandomNumber(n):
     return random.randrange(2**(n-1)+1, 2**n - 1)
 
 
-def isMillerRabinApproved(candidate, iterations):
+def isMillerRabinPassed(candidate, iterations):
     '''Run Rabin Miller Primality check `iterations` times'''
     maxDivisionsByTwo = 0
     ec = candidate-1
@@ -39,7 +39,7 @@ def isMillerRabinApproved(candidate, iterations):
         ec >>= 1
         maxDivisionsByTwo += 1
 
-    # assert(2**maxDivisionsByTwo * ec == candidate-1)
+    assert(2**maxDivisionsByTwo * ec == candidate-1)
 
     def _isComposite(round_tester):
         if pow(round_tester, ec, candidate) == 1:
@@ -67,26 +67,26 @@ def getPrime(n):
             if prime_candidate % divisor == 0 and divisor**2 <= prime_candidate:  # candidate is composite
                 break  # not prime
             else:
-                if isMillerRabinApproved(prime_candidate, 40):
+                if isMillerRabinPassed(prime_candidate, 40):
                     return prime_candidate  # prime
                 else:
                     break  # not prime
 
 
-# def generatePublicAndPrivateKey():
-#     prime_bits = 512
-#     e = 65537
-#     p = getPrime(prime_bits)
-#     q = getPrime(prime_bits)
+def generatePublicAndPrivateKey():
+    prime_bits = 512
+    e = 65537
+    p = getPrime(prime_bits)
+    q = getPrime(prime_bits)
 
-#     while p == q:
-#         q = getPrime(prime_bits)
+    while p == q:
+        q = getPrime(prime_bits)
 
-#     n = p * q   # RSA modulus
+    n = p * q   # RSA modulus
 
-#     phi = (p - 1) * (q - 1) # Carmichael's totient
+    phi = (p - 1) * (q - 1) # Carmichael's totient
 
-#     d = libnum.invmod(e, phi)   # modular multiplicative inverse
+    d = libnum.invmod(e, phi)   # modular multiplicative inverse
     
 
 if __name__ == '__main__':
@@ -142,14 +142,8 @@ if __name__ == '__main__':
     print("Deciphered-b64:\n%s\n" % dc)
 
     encoded_str = base64.b64decode(dc)
-    res = encoded_str.decode('UTF-8')
+    res = str(encoded_str, 'UTF-8')
     
     print("Deciphered text hash:\n%s\n" % res)
     
-    is_valid = True
-    for i in range(len(res)):
-        if res[i] != msg_hash.hexdigest()[i]:
-            is_valid = False
-            break
-
-    print("Is signature valid? %s" % is_valid)
+  

@@ -114,13 +114,14 @@ if __name__ == '__main__':
     messageCounter = 0;
     finalMessage=""
     auxMessage=""
+    print(len(message))
     for c in message:
-        if messageCounter == 64:
-            separatedMessage.append(auxMessage)
-            auxMessage=""
-            messageCounter = 0
+            
         auxMessage+=c
         messageCounter+=1
+        if messageCounter % 64 == 0 or messageCounter == len(message):
+            separatedMessage.append(auxMessage)
+            auxMessage=""
         
     for i in separatedMessage:
         print("BEGIN LOOP\n")

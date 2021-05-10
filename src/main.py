@@ -72,6 +72,7 @@ def getPrime(n):
                 else:
                     break  # not prime
 
+
 def generatePublicAndPrivateKey():
     prime_bits = 512
     e = 65537
@@ -109,31 +110,34 @@ if __name__ == '__main__':
     file_obj.close()
 
     message = ''.join(message)
-    
-    hashed_message = hashlib.sha3_256(message.encode())
-    print( "Hashed text: " +  hashed_message.hexdigest())
-    print("Message read: ")
-    print("%s\n" % message)
-    
-    encoded_bytes = base64.b64encode(hashed_message.hexdigest().encode('UTF-8'))
-    # 
-    int_b = int.from_bytes(encoded_bytes, 'big')
+    print("Message read:\n%s\n" % message)
 
-    print("b64: %s\n" % encoded_bytes)
-    print("Int representation: %s\n" % int_b)
-    #Gera chave publica    
-    c = pow(int_b, e, n)
-    print("Cipher-int: %s\n" % c)
+    # Gera hash
+    msg_hash = hashlib.sha3_256(message.encode())
+    print("Hashed signature:\n%s\n" % msg_hash.hexdigest())
     
+    # Codifica hash
+    encoded_bytes = base64.b64encode(msg_hash.hexdigest().encode('UTF-8'))
+
+    int_byte = int.from_bytes(encoded_bytes, 'big')     # cast para int
+
+    print("Message b64:\n%s\n" % encoded_bytes)
+    # print("Int representation:\n%s\n" % int_byte)
+    
+    # Encripta
+    c = pow(int_byte, e, n)
+    print("Cipher-int:\n%s\n" % c)
+    
+    # Desencripta
     dc = pow(c, d, n)
     
-    print("Deciphered-int: %s\n" % dc)
-    dc = (dc).to_bytes((dc.bit_length() + 7) // 8, byteorder='big')
-    print("Deciphered-b64: %s\n" % dc)
+    # print("Deciphered-int:\n%s\n" % dc)
+    dc = (dc).to_bytes(bytes_needed(dc), byteorder='big') # cast para bytes
+    print("Deciphered-b64:\n%s\n" % dc)
 
-    encoded_str = base64.b64decode(dc + b'===')
+    encoded_str = base64.b64decode(dc)
     res = str(encoded_str, 'UTF-8')
     
-    print("Deciphered text hashed: %s\n" % res)
+    print("Deciphered text hash:\n%s\n" % res)
     
   

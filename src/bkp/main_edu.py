@@ -97,7 +97,7 @@ if __name__ == '__main__':
     file_obj.close()
 
     message = ''.join(message)
-    message = "Ola teste 123"
+    message = "Olaaaaa"
     # c = ''
     # for ch in message:
     #     m = ord(ch)
@@ -105,22 +105,31 @@ if __name__ == '__main__':
     #     # print('m: ', m)
     #     c += str(pow(m, e, n)) + " "
 
-    print("Message read: ")
-    print("%s\n" % message)
-
-    encoded_bytes = base64.b64encode(message.encode('UTF-8'))
-    int_b = int.from_bytes(encoded_bytes, 'big')
+    # print("Message read: ")
+    # print("%s\n" % message)
     
-    # info = [int_b[i:i+2] for i in range(0, len(int_b), 2)]
+    encoded_bytes = base64.b64encode(message.encode('UTF-8'))
+    
+    int_b = int.from_bytes(encoded_bytes, 'big')
 
     print("b64: %s\n" % encoded_bytes)
     print("Int representation: %s\n" % int_b)
+    print("Bytes needed: %d" % len(encoded_bytes))
 
     # hash_sha3_512 = hashlib.new("sha3_512", message.encode())
     # print("HASH:\n{}".format(hash_sha3_512.hexdigest()))
+    # for i in range(str(int_b)):
 
-    c = pow(int_b, e, n)
+    chunks = [str(encoded_bytes)[i:i+128] for i in range(0, len(encoded_bytes), 128)]
+    print("chunks: {}".format(chunks))
     
+    c = []
+    for i in range(len(chunks)):
+        aux = int.from_bytes(encoded_bytes, byteorder='big', signed=False)
+        c.append(pow(aux, e, n))
+    # c = pow(int_b, e, n)
+    
+
     print("Cipher-int: %s\n" % c)
 
     # m = int.from_bytes(message.encode(), byteorder='big', signed=False)
@@ -148,15 +157,23 @@ if __name__ == '__main__':
     #         res += chr(pow(ch, d, n))
 
     # res = pow(c, d, n)  # Deciphering text
+    
+    dc = [0] * len(c)
+    # print(len(dc))
+    for i in range(len(c)):
+        dc[i] = pow(c[i], d, n)
+        dc[i] = int.to_bytes(dc[i], 128, byteorder='big')
+        print(dc[i])
+        dc[i] = base64.b64decode(dc[i])
+        dc[i] = dc[i].decode('utf-8')
 
-    dc = pow(c, d, n)
-    
     print("Deciphered-int: %s\n" % dc)
-    dc = (dc).to_bytes((dc.bit_length() + 7) // 8, byteorder='big')
-    print("Deciphered-b64: %s\n" % dc)
+    # dc = ''.join(dc)
+    # dc = (dc).to_bytes((dc.bit_length() + 7) // 8, byteorder='big')
+    # print("Deciphered-b64: %s\n" % dc)
     
-    encoded_str = base64.b64decode(dc)
-    res = str(encoded_str, 'UTF-8')
+    # encoded_str = base64.b64decode(dc)
+    # res = str(encoded_str, 'UTF-8')
 
     file_obj = open(r"output.txt", "w")
     file_obj.writelines(res)

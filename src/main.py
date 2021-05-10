@@ -91,13 +91,18 @@ def generatePublicAndPrivateKey():
 
 if __name__ == '__main__':
     # For this section let's generate private and public keys :)
-    prime_bits = 512
     e = 65537
-    p = getPrime(prime_bits)
-    q = getPrime(prime_bits)
+    prime_size = int(sys.argv[1])    # n = p*q
 
+    # Gerando números primos
+    print("Gerando primos")
+    p = getPrime(prime_size)
+    q = getPrime(prime_size)
+    
     while p == q:
-        q = getPrime(prime_bits)
+        q = getPrime(prime_size)
+
+    print("p: {}\nq: {}\n".format(p, q))
 
     n = p * q   # RSA modulus
 
@@ -105,6 +110,7 @@ if __name__ == '__main__':
 
     d = libnum.invmod(e, phi)   # modular multiplicative inverse
 
+    # Lendo mensagem
     file_obj = open(r"input.txt", "r")
     message = file_obj.readlines()
     file_obj.close()
